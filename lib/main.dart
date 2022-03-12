@@ -57,7 +57,8 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold)),
             const Spacer(flex: 4),
           ])),
-      body: TelaCadastro(),
+      body:
+          TelaInicial(), //moficar aq para testar outras telas com appbar fixo igual
     );
   }
 }
@@ -115,6 +116,105 @@ class TelaCadastro extends StatelessWidget {
         ),
         Spacer(flex: 5),
       ],
+    ));
+  }
+}
+
+class TelaInicial extends StatelessWidget {
+  const TelaInicial({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    const inputEmail = TextField(
+      obscureText: false,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        filled: true,
+        fillColor: Colors.white,
+        labelText: 'Email',
+      ),
+    );
+
+    const inputSenha = TextField(
+      obscureText: true,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        filled: true,
+        fillColor: Colors.white,
+        labelText: 'Senha',
+      ),
+    );
+
+    return Center(
+        child: Container(
+      width: 300,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Spacer(
+            flex: 4,
+          ),
+          const Text(
+            "Login",
+            style: TextStyle(
+                color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          ),
+          Spacer(),
+          inputEmail,
+          Spacer(),
+          inputSenha,
+          Spacer(),
+          const Text(
+            "Esqueceu a senha?",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w300,
+                decoration: TextDecoration.underline),
+          ),
+          Spacer(flex: 4),
+          Center(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  elevation: 5,
+                  minimumSize: Size(258, 40),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                  )),
+              onPressed: null,
+              child: const Text(
+                'Login',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal),
+              ),
+            ),
+          ),
+          Center(
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  elevation: 5,
+                  minimumSize: Size(258, 40),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                  )),
+              onPressed: null,
+              child: const Text(
+                'Não Possui conta? Cadastre-se',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+          Spacer(flex: 4),
+        ],
+      ),
     ));
   }
 }
