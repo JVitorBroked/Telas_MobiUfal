@@ -1,3 +1,5 @@
+//import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -20,7 +22,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xFF29AAD7),
       ),
       home:
-          TelaCadastroFinalizado(), //alterar aq para adicionar tela com appbar personalizado
+          HomePage(), //alterar aq para adicionar tela com appbar personalizado
     );
   }
 }
@@ -31,6 +33,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       //backgroundColor: Colors.blue,
       appBar: AppBar(
           toolbarHeight: 90,
@@ -60,7 +63,7 @@ class HomePage extends StatelessWidget {
             const Spacer(flex: 4),
           ])),
       body:
-          TelaLogin(), //moficar aq para testar outras telas com appbar predefinido
+          TelaCadastroVoluntario(), //moficar aq para testar outras telas com appbar predefinido
     );
   }
 }
@@ -127,25 +130,17 @@ class TelaLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const inputEmail = TextField(
-      obscureText: false,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.white,
-        labelText: 'Email',
-      ),
-    );
-
-    const inputSenha = TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        filled: true,
-        fillColor: Colors.white,
-        labelText: 'Senha',
-      ),
-    );
+    Widget inputs(String label, bool obsText) {
+      return TextField(
+        obscureText: obsText,
+        decoration: InputDecoration(
+          //border: OutlineInputBorder(),
+          filled: true,
+          fillColor: Colors.white,
+          labelText: label,
+        ),
+      );
+    }
 
     return Center(
         child: Container(
@@ -163,9 +158,9 @@ class TelaLogin extends StatelessWidget {
                 color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
           ),
           Spacer(),
-          inputEmail,
+          inputs("Email", false),
           Spacer(),
-          inputSenha,
+          inputs("Senha", true),
           Spacer(),
           const Text(
             "Esqueceu a senha?",
@@ -369,5 +364,436 @@ class TelaCadastroFinalizado extends StatelessWidget {
         Spacer(),
       ]),
     ));
+  }
+}
+
+class TelaCadastroDados extends StatelessWidget {
+  const TelaCadastroDados({Key? key}) : super(key: key);
+
+  Widget inputData(String label, bool obsText) {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+        child: TextField(
+          obscureText: obsText,
+          decoration: InputDecoration(
+            // border: OutlineInputBorder(),
+            filled: true,
+            fillColor: Colors.white,
+            labelText: label,
+          ),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Container(
+            //width: 300,
+            child: Column(
+      //mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 168, 0),
+            child: Text(
+              'Criar perfil',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w500),
+            )),
+        //Spacer(),
+        inputData("Nome*", false),
+        inputData("Nome Social", false),
+        inputData("Email*", false),
+        inputData("CPF**", false),
+        inputData("Telefone*", false),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 27, 51, 0),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  elevation: 5,
+                  minimumSize: Size(128, 40),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(100.0)),
+                  )),
+              onPressed: null,
+              child: const Text(
+                'Continuar',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+        ),
+
+        //Spacer(flex: 5),
+      ],
+    )));
+  }
+}
+
+class TelaCadastroPCD extends StatefulWidget {
+  const TelaCadastroPCD({Key? key}) : super(key: key);
+
+  _TelaCadastroPCDState createState() => _TelaCadastroPCDState();
+}
+
+class _TelaCadastroPCDState extends State<TelaCadastroPCD> {
+//Mudar tipo de lista e adicionar itens
+  var vinculos = ['Discente', 'Docente'];
+
+  var tipoDeficiencias = ['Motora', 'Visual'];
+
+  var cursos = ['Ciência da Computação', 'Engenharia de Computação'];
+
+  /* Widget downButton(String label, List<String> lista, String selecionado) {
+    return DropdownButton(
+        hint: Text(label, style: TextStyle(color: Colors.black)),
+        value: selecionado,
+        items: lista.map((String items) {
+          return DropdownMenuItem(
+            value: items,
+            child: Text(items),
+          );
+        }).toList(),
+        iconSize: 25,
+        onChanged: (String? newValue) {
+          setState(() {
+            selecionado = newValue!;
+          });
+        });
+  }
+  */
+
+  String? deficienciaSelecionada;
+  String? cursoSelecionado;
+  String? vinculoSelecionado;
+
+  final _dropdownFormKey = GlobalKey<FormState>();
+  final _dropdownFormKey2 = GlobalKey<FormState>();
+  final _dropdownFormKey3 = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Container(
+            //width: 300,
+            child: Column(
+      //mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Spacer(),
+        const Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 168, 0),
+            child: Text(
+              'Criar perfil',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w500),
+            )),
+        Spacer(),
+        Padding(
+          padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+          child: Form(
+            key: _dropdownFormKey,
+            child: DropdownButtonFormField(
+              decoration: InputDecoration(
+                //enabledBorder: OutlineInputBorder(
+                //borderSide: BorderSide(color: Colors.black, width: 1),
+                //  borderRadius: BorderRadius.circular(5),
+                //),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              validator: (value) => value == null ? "Selecione vínculo" : null,
+              dropdownColor: Colors.white,
+              value: vinculoSelecionado,
+              onChanged: (String? newValue) {
+                setState(() {
+                  vinculoSelecionado = newValue!;
+                });
+              },
+              hint: Text("Vínculo com a UFAL*"),
+              items: vinculos.map((String items) {
+                return DropdownMenuItem(
+                  value: items,
+                  child: Text(items),
+                );
+              }).toList(),
+            ),
+
+            //ElevatedButton(
+            //    onPressed: () {
+            //      if (_dropdownFormKey.currentState!.validate()) {
+            //        //valid flow
+            //      }
+            //    },
+            //    child: Text("Submit")),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+            child: Form(
+              key: _dropdownFormKey2,
+              child: DropdownButtonFormField(
+                decoration: InputDecoration(
+                  //enabledBorder: OutlineInputBorder(
+                  //borderSide: BorderSide(color: Colors.black, width: 1),
+                  //  borderRadius: BorderRadius.circular(5),
+                  //),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                validator: (value) =>
+                    value == null ? "Selecione deficiência" : null,
+                dropdownColor: Colors.white,
+                value: deficienciaSelecionada,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    deficienciaSelecionada = newValue!;
+                  });
+                },
+                hint: Text("Tipo de Deficiência*"),
+                items: tipoDeficiencias.map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+              ),
+            )),
+        Padding(
+            padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+            child: Form(
+              key: _dropdownFormKey3,
+              child: DropdownButtonFormField(
+                decoration: InputDecoration(
+                  //enabledBorder: OutlineInputBorder(
+                  //borderSide: BorderSide(color: Colors.black, width: 1),
+                  //  borderRadius: BorderRadius.circular(5),
+                  //),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                validator: (value) => value == null ? "Selecione curso" : null,
+                dropdownColor: Colors.white,
+                value: cursoSelecionado,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    cursoSelecionado = newValue!;
+                  });
+                },
+                hint: Text("Curso*"),
+                items: cursos.map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+              ),
+            )),
+        inputData("Senha*", true),
+        inputData("Confirmar senha*", true),
+        Spacer(),
+        TextButton(
+          style: TextButton.styleFrom(
+              backgroundColor: Colors.red,
+              elevation: 5,
+              minimumSize: Size(258, 40),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(100.0)),
+              )),
+          onPressed: () {
+            if (_dropdownFormKey.currentState!.validate() &&
+                _dropdownFormKey2.currentState!.validate() &&
+                _dropdownFormKey3.currentState!.validate()) {
+              //valid flow
+            }
+          },
+          child: const Text(
+            'Finalizar',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.normal),
+          ),
+        ),
+        Spacer(flex: 4),
+      ],
+    )));
+  }
+}
+
+Widget inputData(String label, bool obsText) {
+  return Padding(
+      padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+      child: TextField(
+        obscureText: obsText,
+        decoration: InputDecoration(
+          // border: OutlineInputBorder(),
+          filled: true,
+          fillColor: Colors.white,
+          labelText: label,
+        ),
+      ));
+}
+
+class TelaCadastroVoluntario extends StatefulWidget {
+  const TelaCadastroVoluntario({Key? key}) : super(key: key);
+
+  _TelaCadastroVoluntarioState createState() => _TelaCadastroVoluntarioState();
+}
+
+class _TelaCadastroVoluntarioState extends State<TelaCadastroVoluntario> {
+//Mudar tipo de lista e adicionar itens
+  var vinculos = ['Discente', 'Docente'];
+  var cursos = ['Ciência da Computação', 'Engenharia de Computação'];
+
+  String? cursoSelecionado;
+  String? vinculoSelecionado;
+
+  final _dropdownFormKey = GlobalKey<FormState>();
+  final _dropdownFormKey2 = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Container(
+            //width: 300,
+            child: Column(
+      //mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Spacer(),
+        const Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 168, 0),
+            child: Text(
+              'Criar perfil',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w500),
+            )),
+        Spacer(),
+        Padding(
+          padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+          child: Form(
+            key: _dropdownFormKey,
+            child: DropdownButtonFormField(
+              decoration: InputDecoration(
+                //enabledBorder: OutlineInputBorder(
+                //borderSide: BorderSide(color: Colors.black, width: 1),
+                //  borderRadius: BorderRadius.circular(5),
+                //),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              validator: (value) => value == null ? "Selecione curso" : null,
+              dropdownColor: Colors.white,
+              value: vinculoSelecionado,
+              onChanged: (String? newValue) {
+                setState(() {
+                  vinculoSelecionado = newValue!;
+                });
+              },
+              hint: Text("Vínculo com a UFAL*"),
+              items: vinculos.map((String items) {
+                return DropdownMenuItem(
+                  value: items,
+                  child: Text(items),
+                );
+              }).toList(),
+            ),
+
+            //ElevatedButton(
+            //    onPressed: () {
+            //      if (_dropdownFormKey.currentState!.validate()) {
+            //        //valid flow
+            //      }
+            //    },
+            //    child: Text("Submit")),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
+            child: Form(
+              key: _dropdownFormKey2,
+              child: DropdownButtonFormField(
+                decoration: InputDecoration(
+                  //enabledBorder: OutlineInputBorder(
+                  //borderSide: BorderSide(color: Colors.black, width: 1),
+                  //  borderRadius: BorderRadius.circular(5),
+                  //),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                validator: (value) =>
+                    value == null ? "Selecione deficiência" : null,
+                dropdownColor: Colors.white,
+                value: cursoSelecionado,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    cursoSelecionado = newValue!;
+                  });
+                },
+                hint: Text("Curso*"),
+                items: cursos.map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+              ),
+            )),
+        inputData("Senha*", true),
+        inputData("Confirmar senha*", true),
+        Spacer(),
+        TextButton(
+          style: TextButton.styleFrom(
+              backgroundColor: Colors.red,
+              elevation: 5,
+              minimumSize: Size(258, 40),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(100.0)),
+              )),
+          onPressed: () {
+            if (_dropdownFormKey.currentState!.validate() &&
+                _dropdownFormKey2.currentState!.validate()) {
+              //valid flow
+            }
+          },
+          child: const Text(
+            'Finalizar',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.normal),
+          ),
+        ),
+        Spacer(flex: 4),
+      ],
+    )));
   }
 }
