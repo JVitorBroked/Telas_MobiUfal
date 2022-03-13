@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Color(0xFF29AAD7),
       ),
-      home: HomePage(),
+      home:
+          TelaInicial(), //alterar aq para adicionar tela com appbar personalizado
     );
   }
 }
@@ -58,7 +60,7 @@ class HomePage extends StatelessWidget {
             const Spacer(flex: 4),
           ])),
       body:
-          TelaInicial(), //moficar aq para testar outras telas com appbar fixo igual
+          TelaLogin(), //moficar aq para testar outras telas com appbar predefinido
     );
   }
 }
@@ -120,8 +122,8 @@ class TelaCadastro extends StatelessWidget {
   }
 }
 
-class TelaInicial extends StatelessWidget {
-  const TelaInicial({Key? key}) : super(key: key);
+class TelaLogin extends StatelessWidget {
+  const TelaLogin({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +154,7 @@ class TelaInicial extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Spacer(
+          const Spacer(
             flex: 4,
           ),
           const Text(
@@ -216,5 +218,72 @@ class TelaInicial extends StatelessWidget {
         ],
       ),
     ));
+  }
+}
+
+class TelaInicial extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+            child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Spacer(flex: 2),
+        Image.asset(
+          'assets/Mobi_logo.png',
+          fit: BoxFit.contain,
+          height: 84,
+          width: 56,
+        ),
+        Spacer(),
+        Text(MyApp.title,
+            textScaleFactor: 3,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.white)),
+        const Spacer(flex: 2),
+        const Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(69, 0, 0, 0),
+              child: Text(
+                'Olá!',
+                textDirection: TextDirection.ltr,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w200),
+              ),
+            )),
+        Spacer(),
+        const Text(
+          'Seja bem vindo ao\nMobiUfal',
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.w200,
+              fontFamily: 'Lato'),
+        ),
+        Spacer(),
+        TextButton(
+          style: TextButton.styleFrom(
+              backgroundColor: Colors.red,
+              elevation: 5,
+              minimumSize: Size(258, 40),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(100.0)),
+              )),
+          onPressed: null,
+          child: const Text(
+            'Iniciar',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.normal),
+          ),
+        ),
+        Spacer(flex: 3),
+      ],
+    )));
   }
 }
