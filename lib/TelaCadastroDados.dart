@@ -51,7 +51,7 @@ class TelaCadastroDados extends StatelessWidget {
             inputData("Nome*", false),
             inputData("Nome Social", false),
             inputData("Email*", false),
-            inputData("CPF**", false),
+            inputData("CPF*", false),
             inputData("Telefone*", false),
             Align(
               alignment: Alignment.bottomRight,
