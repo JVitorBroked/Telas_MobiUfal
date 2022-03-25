@@ -1,25 +1,53 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mobi_ufal/Session.dart';
+import 'package:mobi_ufal/User.dart';
 
 import 'main.dart';
 import 'TelaCadastroFinalizado.dart';
 
 class TelaCadastroPCD extends StatefulWidget {
-  const TelaCadastroPCD({Key? key}) : super(key: key);
+  final String name;
+  final String socialName;
+  final String email;
+  final String cpf;
+  final String phone;
+
+  const TelaCadastroPCD(
+      {Key? key,
+      required this.name,
+      required this.socialName,
+      required this.email,
+      required this.cpf,
+      required this.phone})
+      : super(key: key);
 
   _TelaCadastroPCDState createState() => _TelaCadastroPCDState();
 }
 
 class _TelaCadastroPCDState extends State<TelaCadastroPCD> {
 //Mudar tipo de lista e adicionar itens
-  var vinculos = ['Discente', 'Docente'];
+  var vinculos = ['Estudante', 'Servidor', 'Profissional terceirizado'];
 
-  var tipoDeficiencias = ['Motora', 'Visual'];
+  var tipoDeficiencias = [
+    'Baixa visão',
+    'Cegueira',
+    'surdocegueira',
+    'Física',
+    'Múltipla'
+  ];
 
   var cursos = ['Ciência da Computação', 'Engenharia de Computação'];
 
   String? deficienciaSelecionada;
   String? cursoSelecionado;
   String? vinculoSelecionado;
+
+  final TextEditingController _controladorSenha = TextEditingController();
+  final TextEditingController _controladorConfirmarSenha =
+      TextEditingController();
 
   final _dropdownFormKey = GlobalKey<FormState>();
   final _dropdownFormKey2 = GlobalKey<FormState>();
@@ -157,8 +185,8 @@ class _TelaCadastroPCDState extends State<TelaCadastroPCD> {
                     }).toList(),
                   ),
                 )),
-            inputData("Senha*", true),
-            inputData("Confirmar senha*", true),
+            inputData("Senha*", true, _controladorSenha),
+            inputData("Confirmar senha*", true, _controladorConfirmarSenha),
             Spacer(),
             TextButton(
               style: TextButton.styleFrom(
@@ -171,13 +199,36 @@ class _TelaCadastroPCDState extends State<TelaCadastroPCD> {
               onPressed: () {
                 if (_dropdownFormKey.currentState!.validate() &&
                     _dropdownFormKey2.currentState!.validate() &&
-                    _dropdownFormKey3.currentState!.validate()) {
+                    _dropdownFormKey3.currentState!.validate() &&
+                    _controladorSenha.text.isNotEmpty &&
+                    _controladorSenha.text
+                            .compareTo(_controladorConfirmarSenha.text) ==
+                        0) {
                   //valid flow
-                  Navigator.push(
+
+                  Future<http.Response> response = teste(User(
+                      name: widget.name,
+                      email: widget.email,
+                      phone: widget.phone,
+                      affiliation: vinculoSelecionado.toString(),
+                      course_sector: cursoSelecionado.toString(),
+                      role: deficienciaSelecionada.toString(),
+                      password: _controladorSenha.text));
+
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) =>
-                              TelaCadastroFinalizado()));
+                              Session(data: response)));
+
+                  /*Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const TelaCadastroFinalizado()));
+                */
+                } else {
+                  showAlertDialog(context);
                 }
               },
               child: const Text(
@@ -194,10 +245,11 @@ class _TelaCadastroPCDState extends State<TelaCadastroPCD> {
   }
 }
 
-Widget inputData(String label, bool obsText) {
+Widget inputData(String label, bool obsText, TextEditingController controller) {
   return Padding(
       padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
       child: TextField(
+        controller: controller,
         obscureText: obsText,
         decoration: InputDecoration(
           // border: OutlineInputBorder(),
@@ -206,4 +258,39 @@ Widget inputData(String label, bool obsText) {
           labelText: label,
         ),
       ));
+}
+
+Future<http.Response> enviarSolicitacaoCadastro(User user) async {
+  final response = await http.post(Uri.parse("uri/"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(user));
+
+  return response;
+}
+
+showAlertDialog(BuildContext context) {
+  Widget okButton = TextButton(
+      onPressed: () => Navigator.pop(context), child: const Text("OK"));
+
+  AlertDialog alertDialog =
+      AlertDialog(title: const Text("Preencha os campos"), actions: [okButton]);
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      });
+}
+
+Future<http.Response> teste(User user) async {
+  final response =
+      await http.post(Uri.parse("https://jsonplaceholder.typicode.com/posts"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(user));
+
+  return response;
 }

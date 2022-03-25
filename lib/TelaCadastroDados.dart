@@ -6,7 +6,13 @@ import 'main.dart';
 
 class TelaCadastroDados extends StatelessWidget {
   final String typeUser;
-  const TelaCadastroDados({Key? key, required this.typeUser}) : super(key: key);
+  TelaCadastroDados({Key? key, required this.typeUser}) : super(key: key);
+
+  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerSocialName = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllercpf = TextEditingController();
+  final TextEditingController _controllerPhone = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +54,11 @@ class TelaCadastroDados extends StatelessWidget {
                       fontWeight: FontWeight.w500),
                 )),
             //Spacer(),
-            inputData("Nome*", false),
-            inputData("Nome Social", false),
-            inputData("Email*", false),
-            inputData("CPF*", false),
-            inputData("Telefone*", false),
+            inputData("Nome*", false, _controllerName),
+            inputData("Nome Social", false, _controllerSocialName),
+            inputData("Email*", false, _controllerEmail),
+            inputData("CPF*", false, _controllercpf),
+            inputData("phone*", false, _controllerPhone),
             Align(
               alignment: Alignment.bottomRight,
               child: Padding(
@@ -66,18 +72,43 @@ class TelaCadastroDados extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(100.0)),
                       )),
                   onPressed: () {
-                    if (typeUser == "User") {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  TelaCadastroPCD()));
+                    String nome = _controllerName.text;
+                    String nomeSocial = _controllerSocialName.text;
+                    String email = _controllerEmail.text;
+                    String cpf = _controllercpf.text;
+                    String phone = _controllerPhone.text;
+
+                    if (nome.isNotEmpty &&
+                        email.isNotEmpty &&
+                        cpf.isNotEmpty &&
+                        phone.isNotEmpty) {
+                      if (typeUser == "User") {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    TelaCadastroPCD(
+                                      name: nome,
+                                      socialName: nomeSocial,
+                                      email: email,
+                                      cpf: cpf,
+                                      phone: phone,
+                                    )));
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    TelaCadastroVoluntario(
+                                      name: nome,
+                                      socialName: nomeSocial,
+                                      email: email,
+                                      cpf: cpf,
+                                      phone: phone,
+                                    )));
+                      }
                     } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  TelaCadastroVoluntario()));
+                      showAlertDialog(context);
                     }
                   },
                   child: const Text(
@@ -96,10 +127,12 @@ class TelaCadastroDados extends StatelessWidget {
         ))));
   }
 
-  Widget inputData(String label, bool obsText) {
+  Widget inputData(
+      String label, bool obsText, TextEditingController controller) {
     return Padding(
         padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
         child: TextField(
+          controller: controller,
           obscureText: obsText,
           decoration: InputDecoration(
             // border: OutlineInputBorder(),
@@ -109,4 +142,19 @@ class TelaCadastroDados extends StatelessWidget {
           ),
         ));
   }
+}
+
+showAlertDialog(BuildContext context) {
+  Widget okButton = TextButton(
+      onPressed: () => Navigator.pop(context), child: const Text("OK"));
+
+  AlertDialog alertDialog = AlertDialog(
+      title: const Text("Preencha todos os campos obrigatorios (*)"),
+      actions: [okButton]);
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      });
 }

@@ -1,17 +1,35 @@
-import 'package:flutter/material.dart';
-import 'package:mobi_ufal/TelaCadastroFinalizado.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:mobi_ufal/Session.dart';
+import 'package:mobi_ufal/TelaCadastroFinalizado.dart';
+import 'package:http/http.dart' as http;
+
+import 'User.dart';
 import 'main.dart';
 
 class TelaCadastroVoluntario extends StatefulWidget {
-  const TelaCadastroVoluntario({Key? key}) : super(key: key);
+  final String name;
+  final String socialName;
+  final String email;
+  final String cpf;
+  final String phone;
+
+  const TelaCadastroVoluntario(
+      {Key? key,
+      required this.name,
+      required this.socialName,
+      required this.email,
+      required this.cpf,
+      required this.phone})
+      : super(key: key);
 
   _TelaCadastroVoluntarioState createState() => _TelaCadastroVoluntarioState();
 }
 
 class _TelaCadastroVoluntarioState extends State<TelaCadastroVoluntario> {
 //Mudar tipo de lista e adicionar itens
-  var vinculos = ['Discente', 'Docente'];
+  var vinculos = ['Estudante', 'Servidor', 'Profissional terceirizado'];
   var cursos = ['Ciência da Computação', 'Engenharia de Computação'];
 
   String? cursoSelecionado;
@@ -19,6 +37,9 @@ class _TelaCadastroVoluntarioState extends State<TelaCadastroVoluntario> {
 
   final _dropdownFormKey = GlobalKey<FormState>();
   final _dropdownFormKey2 = GlobalKey<FormState>();
+
+  final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerSurePassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -122,8 +143,8 @@ class _TelaCadastroVoluntarioState extends State<TelaCadastroVoluntario> {
                     }).toList(),
                   ),
                 )),
-            inputData("Senha*", true),
-            inputData("Confirmar senha*", true),
+            inputData("Senha*", true, _controllerPassword),
+            inputData("Confirmar senha*", true, _controllerSurePassword),
             Spacer(),
             TextButton(
               style: TextButton.styleFrom(
@@ -134,14 +155,35 @@ class _TelaCadastroVoluntarioState extends State<TelaCadastroVoluntario> {
                     borderRadius: BorderRadius.all(Radius.circular(100.0)),
                   )),
               onPressed: () {
+                //valid flow
                 if (_dropdownFormKey.currentState!.validate() &&
-                    _dropdownFormKey2.currentState!.validate()) {
-                  //valid flow
-                  Navigator.push(
+                    _dropdownFormKey2.currentState!.validate() &&
+                    _controllerPassword.text.isNotEmpty &&
+                    _controllerPassword.text
+                            .compareTo(_controllerSurePassword.text) ==
+                        0) {
+                  Future<http.Response> statusPost = teste(User(
+                      name: widget.name,
+                      email: widget.email,
+                      phone: widget.phone,
+                      affiliation: vinculoSelecionado.toString(),
+                      course_sector: cursoSelecionado.toString(),
+                      role: "0",
+                      password: _controllerPassword.text));
+
+                  /*Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) =>
                               TelaCadastroFinalizado()));
+                  */
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              Session(data: statusPost)));
+                } else {
+                  showAlertDialog(context);
                 }
               },
               child: const Text(
@@ -158,10 +200,11 @@ class _TelaCadastroVoluntarioState extends State<TelaCadastroVoluntario> {
   }
 }
 
-Widget inputData(String label, bool obsText) {
+Widget inputData(String label, bool obsText, TextEditingController controller) {
   return Padding(
       padding: EdgeInsets.fromLTRB(51, 13, 51, 0),
       child: TextField(
+        controller: controller,
         obscureText: obsText,
         decoration: InputDecoration(
           // border: OutlineInputBorder(),
@@ -170,4 +213,39 @@ Widget inputData(String label, bool obsText) {
           labelText: label,
         ),
       ));
+}
+
+Future<http.Response> enviarSolicitacaoCadastro(User user) async {
+  final response = await http.post(Uri.parse("uri/"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(user));
+
+  return response;
+}
+
+showAlertDialog(BuildContext context) {
+  Widget okButton = TextButton(
+      onPressed: () => Navigator.pop(context), child: const Text("OK"));
+
+  AlertDialog alertDialog =
+      AlertDialog(title: const Text("Preencha os campos"), actions: [okButton]);
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      });
+}
+
+Future<http.Response> teste(User user) async {
+  final response =
+      await http.post(Uri.parse("https://jsonplaceholder.typicode.com/posts"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(user));
+
+  return response;
 }
